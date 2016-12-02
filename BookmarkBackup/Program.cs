@@ -49,6 +49,30 @@ namespace BookmarkBackup
                     // Copying the files
                     if (options.Restore == false)
                     {
+                        // If you want to copy bookmarks from multiple users on the computer
+                        if (options.Multiple == true)
+                        {
+                            List<string> userList = new List<string>();
+                            foreach (string item in Directory.GetDirectories(@"C:\Users"))
+                            {
+                                userList.Add(item);
+                            }
+                            var usersFiltered =
+                                from string item in userList
+                                where !item.Contains("Administrator")
+                                where !item.Contains("tech")
+                                where !item.Contains("Tech")
+                                where !item.Contains("Default")
+                                where !item.Contains("Public")
+                                where !item.Contains("All Users")
+                                select item;
+                            foreach(string item in usersFiltered)
+                            {
+                                Console.WriteLine(item);
+                            }
+
+                            Console.ReadLine();
+                        }
                         try
                         {
                             Copy(chromeSource, chromeDestination);

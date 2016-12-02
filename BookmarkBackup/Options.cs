@@ -29,12 +29,18 @@ namespace BookmarkBackup
         [VerbOption("restore", HelpText = "Restore the bookmarks. If you saved the bookmarks in a non-default drive, please specifiy the drive to retrive the bookmarks from")]
         public bool Restore { get; set; }
 
+        [Option('m', "multiple", HelpText = "Use if you'd like to backup bookmarks from multiple users")]
+        public bool Multiple { get; set; }
+        
         [ParserState]
         public IParserState LastParserState { get; set; }
 
         [HelpOption]
         public string GetUsage()
         {
+            Console.Write(HelpText.AutoBuild(this,
+              (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current)));
+            Console.ReadLine();
             return HelpText.AutoBuild(this,
               (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
         }
