@@ -66,13 +66,39 @@ namespace BookmarkBackup
                                 where !item.Contains("Public")
                                 where !item.Contains("All Users")
                                 select item;
-                            foreach(string item in usersFiltered)
+
+                            Console.WriteLine("Will copy bookmarks from these users: \n");
+                            foreach (string item in usersFiltered)
                             {
                                 Console.WriteLine(item);
                             }
-
                             Console.ReadLine();
-                        }
+
+                            foreach (string item in usersFiltered)
+                            {
+                                string user;
+                                user = item.Split('\\').Last();
+
+                                chromeSource = (@"%user%\AppData\Local\Google\Chrome\User Data\").Replace("%user%", item);
+                                chromeDestination = (@"%drive%\Bookmarks\%user%\User Data").Replace("%user%", user);
+                                chromeDestination = chromeDestination.Replace("%drive%", options.Drive);
+
+                                firefoxSource = (@"%user%\AppData\Roaming\Mozilla\Firefox\Profiles\").Replace("%user%", item);
+                                firefoxDestination = (@"%drive%\Bookmarks\%user%\Profiles").Replace("%user%", user);
+                                firefoxDestination = firefoxDestination.Replace("%drive%", options.Drive);
+                                try
+                                {
+                                    Copy(chromeSource, chromeDestination);
+                                    Copy(firefoxSource, firefoxDestination);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine(ex.Message);
+                                    Console.ReadLine();
+                                }
+                            } //foreach user
+                        } // if multiple users
                         try
                         {
                             Copy(chromeSource, chromeDestination);
@@ -86,11 +112,62 @@ namespace BookmarkBackup
                         }
                         //Console.WriteLine(chromeSource);
                         //Console.Write(chromeDestination);
-                    }
+                    } // if copying files
 
                     // Restoring the files
                     else if (options.Restore == true)
                     {
+                        if (options.Multiple == true)
+                        {
+                            List<string> userList = new List<string>();
+                            foreach (string item in Directory.GetDirectories(@"C:\Users"))
+                            {
+                                userList.Add(item);
+                            }
+                            var usersFiltered =
+                                from string item in userList
+                                    //where !item.Contains("Administrator")
+                                    //where !item.Contains("tech")
+                                    //where !item.Contains("Tech")
+                                where !item.Contains("Default")
+                                where !item.Contains("Public")
+                                where !item.Contains("All Users")
+                                select item;
+
+                            Console.WriteLine("Will restore bookmarks for these users: \n");
+                            foreach (string item in usersFiltered)
+                            {
+                                Console.WriteLine(item);
+                            }
+                            Console.ReadLine();
+
+                            foreach (string item in usersFiltered)
+                            {
+                                string user;
+                                user = item.Split('\\').Last();
+
+                                chromeSource = (@"%user%\AppData\Local\Google\Chrome\User Data\").Replace("%user%", item);
+                                chromeDestination = (@"%drive%\Bookmarks\%user%\User Data").Replace("%user%", user);
+                                chromeDestination = chromeDestination.Replace("%drive%", options.Drive);
+
+                                firefoxSource = (@"%user%\AppData\Roaming\Mozilla\Firefox\Profiles\").Replace("%user%", item);
+                                firefoxDestination = (@"%drive%\Bookmarks\%user%\Profiles").Replace("%user%", user);
+                                firefoxDestination = firefoxDestination.Replace("%drive%", options.Drive);
+                                try
+                                {
+                                    Copy(chromeDestination, chromeSource);
+                                    Copy(firefoxDestination, firefoxSource);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.Clear();
+                                    Console.WriteLine(ex.Message);
+                                    Console.ReadLine();
+                                }
+                            } //foreach user
+                        } // if multiple users
+
+
                         try
                         {
                             Copy(chromeDestination, chromeSource);
@@ -103,73 +180,73 @@ namespace BookmarkBackup
                             Console.ReadLine();
                         }
                     }
+                } // if copy from all browsers
 
-                    // Else user only wants to copy from one browser
-                    else
+                // Else user only wants to copy from one browser
+                else
+                {
+                    // Copying the files
+                    if (options.Restore == false)
                     {
-                        // Copying the files
-                        if (options.Restore == false)
+                        if (options.Chrome == true)
                         {
-                            if (options.Chrome == true)
+                            try
                             {
-                                try
-                                {
-                                    Copy(chromeSource, chromeDestination);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine(ex.Message);
-                                    Console.ReadLine();
-                                }
-                                //Console.WriteLine(chromeSource);
-                                //Console.Write(chromeDestination);
+                                Copy(chromeSource, chromeDestination);
                             }
-                            else if (options.FireFox == true)
+                            catch (Exception ex)
                             {
-                                try
-                                {
-                                    Copy(firefoxSource, firefoxDestination);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine(ex.Message);
-                                    Console.ReadLine();
-                                }
-                                //Console.WriteLine(chromeSource);
-                                //Console.Write(chromeDestination);
+                                Console.Clear();
+                                Console.WriteLine(ex.Message);
+                                Console.ReadLine();
+                            }
+                            //Console.WriteLine(chromeSource);
+                            //Console.Write(chromeDestination);
+                        }
+                        else if (options.FireFox == true)
+                        {
+                            try
+                            {
+                                Copy(firefoxSource, firefoxDestination);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Clear();
+                                Console.WriteLine(ex.Message);
+                                Console.ReadLine();
+                            }
+                            //Console.WriteLine(chromeSource);
+                            //Console.Write(chromeDestination);
+                        }
+                    }
+
+                    // Restoring the files
+                    else if (options.Restore == true)
+                    {
+                        if (options.Chrome == true)
+                        {
+                            try
+                            {
+                                Copy(chromeDestination, chromeSource);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Clear();
+                                Console.WriteLine(ex.Message);
+                                Console.ReadLine();
                             }
                         }
-
-                        // Restoring the files
-                        else if (options.Restore == true)
+                        else if (options.FireFox == true)
                         {
-                            if (options.Chrome == true)
+                            try
                             {
-                                try
-                                {
-                                    Copy(chromeDestination, chromeSource);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine(ex.Message);
-                                    Console.ReadLine();
-                                }
+                                Copy(firefoxDestination, firefoxSource);
                             }
-                            else if (options.FireFox == true)
+                            catch (Exception ex)
                             {
-                                try
-                                {
-                                    Copy(firefoxDestination, firefoxSource);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.Clear();
-                                    Console.WriteLine(ex.Message);
-                                    Console.ReadLine();
-                                }
+                                Console.Clear();
+                                Console.WriteLine(ex.Message);
+                                Console.ReadLine();
                             }
                         }
                     }

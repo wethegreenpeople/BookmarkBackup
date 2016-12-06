@@ -11,7 +11,7 @@ namespace BookmarkBackup
 {
     class Options
     {
-        [Option('u', "user", Required = true, HelpText = "The user who's bookmarks need to be backed up")]
+        [Option('u', "user", HelpText = "The user who's bookmarks need to be backed up")]
         public string User { get; set; }
 
         [Option('c', "chrome", HelpText = "Only copies bookmarks from Google Chrome")]
@@ -26,11 +26,11 @@ namespace BookmarkBackup
         [Option('d', "drive", DefaultValue = "Current location", HelpText = "Drive in which to save the bookmarks")]
         public string Drive { get; set; }
 
-        [VerbOption("restore", HelpText = "Restore the bookmarks. If you saved the bookmarks in a non-default drive, please specifiy the drive to retrive the bookmarks from")]
-        public bool Restore { get; set; }
-
         [Option('m', "multiple", HelpText = "Use if you'd like to backup bookmarks from multiple users")]
         public bool Multiple { get; set; }
+
+        [VerbOption("restore", HelpText = "Restore the bookmarks. If you saved the bookmarks in a non-default drive, please specifiy the drive to retrive the bookmarks from")]
+        public bool Restore { get; set; }
         
         [ParserState]
         public IParserState LastParserState { get; set; }
